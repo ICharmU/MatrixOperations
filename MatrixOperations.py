@@ -56,7 +56,7 @@ class SquareMatrix(MatrixOperations):
         if not (self.getSize()[0] == self.getSize()[1]):
             del self
         self.invertible = True
-        for row in self.getMatrix():
+        for row in self.rowEchelonForm():
             if self.rowOfZeroes(row):
                 self.invertible = False
                 break
@@ -75,7 +75,6 @@ class SquareMatrix(MatrixOperations):
     def rowEchelonForm(self):
         new_matrix = self.getMatrix().copy()
         w = self.getSize()[0]
-        #print(new_matrix)
         for i in range(w): #iterate through all columns left to right
             if self.rowOfZeroes(new_matrix[i]):
                 continue
@@ -83,7 +82,6 @@ class SquareMatrix(MatrixOperations):
                 multiplier = new_matrix[j][i]
                 for k in range(i,w): #change all rows below the starting row for the iteration to have the column with the leading 1 to be equal to 0
                     new_matrix[j][k] -= multiplier*new_matrix[i][k]/new_matrix[i][i]
-            SquareMatrix(new_matrix).printMatrix()
         return new_matrix
     
     def rowOfZeroes(self, row):
