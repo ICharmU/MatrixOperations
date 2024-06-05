@@ -83,6 +83,27 @@ class SquareMatrix(MatrixOperations):
                 for k in range(i,w): #change all rows below the starting row for the iteration to have the column with the leading 1 to be equal to 0
                     new_matrix[j][k] -= multiplier*new_matrix[i][k]/new_matrix[i][i]
         return new_matrix
+
+    def reducedRowEchelonForm(self):
+        new_matrix = SquareMatrix(self.getMatrix()).rowEchelonForm()
+        w = self.getSize()[0]
+        for i in range(w): #iterate through all columns right to left
+            r = w-i-1 #index of rightmost column/bottom row
+            if self.rowOfZeroes(new_matrix[r]):
+                continue
+            for j in range(i+1,w): #iterate through all rows starting at the main diagonal (bottom to top)
+                multiplier = new_matrix[w-j][w-i-1]
+                for k in range(r): #change all rows the above row for the iteration to have the column value changed to 0
+                    new_matrix[r-k-1][w-i-1] -= multiplier*new_matrix[r-k-1][w-i-1]/new_matrix[r][r]
+                    print(k, r)
+                    SquareMatrix(new_matrix).printMatrix()
+        for i in range(w):
+            multiplier = new_matrix[i][i]
+            if multiplier == 1 or multiplier == 0:
+                continue
+            for j in range(i,w):
+                new_matrix[i][j]/=multiplier
+        return new_matrix
     
     def rowOfZeroes(self, row):
         for num in row:
@@ -128,3 +149,7 @@ ref_matrix = SquareMatrix(ref_matrix)
 ref_matrix.printMatrix()
 trace = square_matrix.traceMatrix()
 #print(trace)
+
+rref_matrix = SquareMatrix(matrix4).reducedRowEchelonForm()
+rref_matrix = SquareMatrix(rref_matrix)
+rref_matrix.printMatrix()
