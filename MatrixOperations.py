@@ -1,4 +1,3 @@
-import numpy as np
 class MatrixOperations:
     def __init__(self, matrix):
         self.orig = matrix
@@ -55,8 +54,6 @@ class MatrixOperations:
 class SquareMatrix(MatrixOperations):
     def __init__(self, matrix):
         super().__init__(matrix)
-        #if not (self.getSize()[0] == self.getSize()[1]):
-        #    del self
         self.invertible = True
         for row in self.rowEchelonForm():
             if self.rowOfZeroes(row):
@@ -85,7 +82,7 @@ class SquareMatrix(MatrixOperations):
         new_matrix = self.getMatrix().copy()
         w = self.getSize()[0]
         for i in range(w): #iterate through all columns left to right
-            if self.rowOfZeroes(new_matrix[i]):
+            if self.rowOfZeroes(new_matrix[i]) or new_matrix[i][i] == 0:
                 continue
             for j in range(i+1,w): #iterate through all rows starting at the main diagonal (top to bottom)
                 multiplier = new_matrix[j][i]
@@ -112,6 +109,15 @@ class SquareMatrix(MatrixOperations):
                 new_matrix[i][j]/=multiplier
         return new_matrix
     
+    def inverseMatrix(self): #assumes A is invertible and the form [A | I] [R | E] is already input as a matrix, meaning A and the identity matrix each take up only one quarter of the entire matrix inputted, while R and E are left blank so the matrix is square
+        new_matrix = []
+        rref_matrix = SquareMatrix(SquareMatrix(self.getMatrix()).reducedRowEchelonForm())
+        w = int(self.getSize()[0]/2)
+        for i in range(w):
+            new_matrix.append(rref_matrix.getMatrix()[i][w:])
+        return new_matrix
+
+
     def rowOfZeroes(self, row):
         for num in row:
             if not num == 0:
@@ -154,3 +160,13 @@ matrix6 = [[-2,0,7,7,-3,9],
 matrix6 = SquareMatrix(matrix6)
 matrix6.printMatrix()
 SquareMatrix(matrix6.rowEchelonForm()).printMatrix()
+
+imatrix7 = [[2,0,0,1,0,0],
+           [0,3,0,0,1,0],
+           [0,0,4,0,0,1],
+           [0,0,0,0,0,0],
+           [0,0,0,0,0,0],
+           [0,0,0,0,0,0]]
+imatrix7 = SquareMatrix(imatrix7)
+imatrix7.printMatrix()
+SquareMatrix(imatrix7.inverseMatrix()).printMatrix()
