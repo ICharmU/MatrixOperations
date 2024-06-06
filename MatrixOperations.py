@@ -1,5 +1,7 @@
+import numpy as np
 class MatrixOperations:
     def __init__(self, matrix):
+        self.orig = matrix
         self.matrix = matrix
         self.m = len(matrix)
         self.n = len(matrix[0])
@@ -53,14 +55,17 @@ class MatrixOperations:
 class SquareMatrix(MatrixOperations):
     def __init__(self, matrix):
         super().__init__(matrix)
-        if not (self.getSize()[0] == self.getSize()[1]):
-            del self
+        #if not (self.getSize()[0] == self.getSize()[1]):
+        #    del self
         self.invertible = True
         for row in self.rowEchelonForm():
             if self.rowOfZeroes(row):
                 self.invertible = False
                 break
     
+    def isInvertible(self):
+        return self.invertible
+
     def traceMatrix(self):
         sum = 0
         for i in range(self.getSize()[0]):
@@ -68,9 +73,13 @@ class SquareMatrix(MatrixOperations):
         return sum
 
     def determinant(self):
-        sum = 0
-        #get to ref then multiply main diagonal together then subtract bottom right 2x2 matrix
-        return sum
+        if not self.isInvertible():
+            return 0
+        product = 1
+        new_matrix = SquareMatrix(self.getMatrix().copy()).rowEchelonForm()
+        for i in range(len(new_matrix)):
+            product *= new_matrix[i][i]
+        return product
     
     def rowEchelonForm(self):
         new_matrix = self.getMatrix().copy()
@@ -85,7 +94,7 @@ class SquareMatrix(MatrixOperations):
         return new_matrix
 
     def reducedRowEchelonForm(self):
-        new_matrix = SquareMatrix(self.getMatrix()).rowEchelonForm()
+        new_matrix = SquareMatrix(self.getMatrix().copy()).rowEchelonForm()
         w = self.getSize()[0]
         for i in range(w): #iterate through all columns right to left
             r = w-i-1 #index of rightmost column/bottom row
@@ -95,8 +104,6 @@ class SquareMatrix(MatrixOperations):
                 multiplier = new_matrix[w-j][w-i-1]
                 for k in range(r): #change all rows the above row for the iteration to have the column value changed to 0
                     new_matrix[r-k-1][w-i-1] -= multiplier*new_matrix[r-k-1][w-i-1]/new_matrix[r][r]
-                    print(k, r)
-                    SquareMatrix(new_matrix).printMatrix()
         for i in range(w):
             multiplier = new_matrix[i][i]
             if multiplier == 1 or multiplier == 0:
@@ -113,13 +120,11 @@ class SquareMatrix(MatrixOperations):
 
     
 def matrixTester(matrix1, matrix2):
-    temp = matrix2
     matrix1 = MatrixOperations(matrix1)
     matrix2 = MatrixOperations(matrix2)
     #new_matrix = matrix1.addMatrix(matrix2) #add 2 matrices
     #new_matrix = matrix1.multiplyMatrix(matrix2) #multiply 2 matrices
-    #new_matrix = matrix2.transposeMatrix() #transpose
-    new_matrix = temp
+    new_matrix = matrix2.transposeMatrix() #transpose
     return new_matrix
 
 matrix1 = [[1,0],
@@ -136,20 +141,16 @@ matrix4 = [[1,2,3,4,5],
            [11,12,13,14,15],
            [16,17,18,19,20],
            [21,22,23,24,25]]
-new_matrix = MatrixOperations(matrixTester(matrix1, matrix2))
-#matrix1 = MatrixOperations(matrix1)
-#matrix2 = MatrixOperations(matrix2)
-#matrix1.printMatrix()
-#matrix2.printMatrix()
-new_matrix.printMatrix()
-
-square_matrix = SquareMatrix(matrix4)
-ref_matrix = square_matrix.rowEchelonForm()
-ref_matrix = SquareMatrix(ref_matrix)
-ref_matrix.printMatrix()
-trace = square_matrix.traceMatrix()
-#print(trace)
-
-rref_matrix = SquareMatrix(matrix4).reducedRowEchelonForm()
-rref_matrix = SquareMatrix(rref_matrix)
-rref_matrix.printMatrix()
+matrix5 = [[3,3,1],
+           [0,1,0],
+           [1,1,3]]
+matrix5 = SquareMatrix(matrix5)
+matrix6 = [[-2,0,7,7,-3,9],
+           [1,-6,2,4,5,6],
+           [4,3,9,9,-4,8],
+           [5,9,0,2,8,1],
+           [-2,3,4,7,6,8],
+           [-4,-1,2,-1,3,2]]
+matrix6 = SquareMatrix(matrix6)
+matrix6.printMatrix()
+SquareMatrix(matrix6.rowEchelonForm()).printMatrix()
